@@ -22,7 +22,9 @@ public abstract class ToolBarActivity extends BaseActivity{
 
     @Bind(R.id.common_tl_toolbar)
     public Toolbar mToolbar;
+
     private ActionBar mActionBar;
+
     @Bind(R.id.common_tv_title)
     public TextView mTvToolBarCenter;
     private boolean mIsEnableActionBar = true;
@@ -36,7 +38,8 @@ public abstract class ToolBarActivity extends BaseActivity{
 
 
     @Override
-    protected View onBeforeSetContentLayout(View contentView) {
+    protected View onDealWithContentView(View contentView) {
+        contentView = super.onDealWithContentView(contentView);
         LinearLayout newContent = new LinearLayout(this);
         newContent.setOrientation(LinearLayout.VERTICAL);
         mInflater.from(this).inflate(R.layout.tool_bar, newContent, true);

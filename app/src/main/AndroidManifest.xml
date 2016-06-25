@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:name=".PwcApplication"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.activity.MainActivity">
+        <activity android:name=".busniess.main.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

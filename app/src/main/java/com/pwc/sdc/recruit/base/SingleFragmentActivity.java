@@ -1,5 +1,7 @@
 package com.pwc.sdc.recruit.base;
 
+import android.view.View;
+
 import com.pwc.sdc.recruit.R;
 
 /**
@@ -18,6 +20,10 @@ public abstract class SingleFragmentActivity extends ToolBarActivity {
 
     }
 
+    @Override
+    protected View onDealWithContentView(View contentView) {
+        return super.onDealWithContentView(contentView);
+    }
 
     @Override
     protected int getLayoutId() {

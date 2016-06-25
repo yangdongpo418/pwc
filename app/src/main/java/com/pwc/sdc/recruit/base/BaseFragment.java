@@ -6,22 +6,20 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.pwc.sdc.recruit.PwcApplication;
 import com.pwc.sdc.recruit.R;
-import com.pwc.sdc.recruit.data.remote.BackPointService;
-import com.pwc.sdc.recruit.view.widget.LoadStateFrameLayout;
-import com.pwc.sdc.recruit.view.widget.PtrFixFrameLayout;
-import com.thirdparty.proxy.log.TLog;
+import com.pwc.sdc.recruit.base.interf.ViewLayer;
+import com.pwc.sdc.recruit.widget.LoadStateFrameLayout;
+import com.pwc.sdc.recruit.widget.PtrFixFrameLayout;
 
 import butterknife.ButterKnife;
 import in.srain.cube.views.ptr.PtrDefaultHandler;
 import in.srain.cube.views.ptr.PtrFrameLayout;
-import rx.Subscription;
 
 
 /**
@@ -30,24 +28,14 @@ import rx.Subscription;
  * @author
  * @created
  */
-public abstract class BaseFragment extends Fragment {
-
-    public static final int STATE_NONE = 0;
-    public static final int STATE_REFRESH = 1;
-    public static final int STATE_LOADMORE = 2;
-    public static final int STATE_NOMORE = 3;
-    public static final int STATE_PRESSNONE = 4;// 正在下拉但还没有到刷新的状态
-    public static int mState = STATE_NONE;
+public abstract class BaseFragment<T extends BasePresenter> extends Fragment implements ViewLayer<T> {
 
     protected LayoutInflater mInflater;
     public BaseActivity mActivity;
-    private View mContentView;
+    private android.view.View mContentView;
     private LoadStateFrameLayout mLoadStateFrameLayout;
     private PtrFixFrameLayout mPtrFrameLayout;
-
-    public PwcApplication getApplication() {
-        return mActivity.getAppContext();
-    }
+    protected T mPresenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,12 +55,12 @@ public abstract class BaseFragment extends Fragment {
 
         if (setPullToRefreshEnable()) {
             mPtrFrameLayout = (PtrFixFrameLayout) inflater.inflate(R.layout.fragment_base, container, false);
-            inflater.inflate(getLayoutId(), mPtrFrameLayout, true);
-            mPtrFrameLayout.updateContent();
+            FrameLayout content = (FrameLayout) mPtrFrameLayout.getContentView();
+            inflater.inflate(getLayoutId(), content, true);
             mPtrFrameLayout.setPtrHandler(new PtrDefaultHandler() {
                 @Override
                 public void onRefreshBegin(PtrFrameLayout frame) {
-                    onRefresh(frame);
+                    mPresenter.onRefresh(frame);
                 }
             });
             mContentView = mPtrFrameLayout;
@@ -92,7 +80,7 @@ public abstract class BaseFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(android.view.View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState != null) {
             onRestoreInitData(savedInstanceState);
@@ -116,12 +104,9 @@ public abstract class BaseFragment extends Fragment {
 
     }
 
-    /**
-     * 下拉刷新时调用
-     * @param frame
-     */
-    protected void onRefresh(PtrFrameLayout frame){
-
+    @Override
+    public void setPresenter(T presenter) {
+        mPresenter = presenter;
     }
 
     @Override
@@ -139,7 +124,11 @@ public abstract class BaseFragment extends Fragment {
         super.onDestroy();
     }
 
-    protected View inflateView(int resId) {
+    public PwcApplication getApplication() {
+        return mActivity.getPwcApplication();
+    }
+
+    protected android.view.View inflateView(int resId) {
         return this.mInflater.inflate(resId, null);
     }
 
@@ -198,91 +187,6 @@ public abstract class BaseFragment extends Fragment {
 
     protected void updateStateView(int state) {
         mLoadStateFrameLayout.updateState(state);
-    }
-
-    public void addFragment(int container, BaseFragment fragment) {
-        mActivity.addFragment(container, fragment);
-    }
-
-    public void removeFragment(BaseFragment fragment) {
-        mActivity.removeFragment(fragment);
-    }
-
-    public void showFragment(BaseFragment fragment) {
-        mActivity.showFragment(fragment);
-    }
-
-    public void hideFragment(BaseFragment fragment) {
-        mActivity.hideFragment(fragment);
-    }
-
-    public void replaceFragment(int container, BaseFragment fragment) {
-        mActivity.replaceFragment(container, fragment);
-    }
-
-    public void startFragment(int container, Class<? extends BaseFragment> clazz, Bundle bundle) {
-        mActivity.startFragment(container, this, clazz, bundle);
-    }
-
-    public BaseFragment obtainFragment(Class<? extends BaseFragment> clazz) {
-        return mActivity.obtainFragment(clazz);
-    }
-
-    public void startActivity(Class<?> cls) {
-        mActivity.startActivity(cls);
-    }
-
-    public void startActivity(Class<?> cls, Bundle bundle) {
-        mActivity.startActivity(cls, bundle);
-    }
-
-    public void startActivity(String action) {
-        mActivity.startActivity(action);
-    }
-
-    public void startActivity(String action, Bundle bundle) {
-        mActivity.startActivity(action, bundle);
-    }
-
-    public void startActivityForResult(Class<?> cls, Bundle bundle, int requestCode) {
-        mActivity.startActivityForResult(cls, bundle, requestCode);
-    }
-
-    public void showToast(String message) {
-        showToast(message, 0, Gravity.BOTTOM);
-    }
-
-    public void showToast(int msgResid) {
-        showToast(getString(msgResid), 0, Gravity.BOTTOM);
-    }
-
-    public void showToast(String message, int icon, int gravity) {
-        mActivity.showToast(mState, icon, gravity);
-    }
-
-    protected void showDebugLog(String msg) {
-        TLog.d(msg);
-    }
-
-    protected void showErrorLog(String msg) {
-        TLog.e(msg);
-    }
-
-    protected void showInfoLog(String msg) {
-        TLog.i(msg);
-    }
-
-
-    public void addAsyncRequests(Subscription request) {
-        mActivity.addAsyncRequests(request);
-    }
-
-    public void cancelRequest(Subscription request) {
-        mActivity.cancelRequest(request);
-    }
-
-    protected BackPointService getBackPointService() {
-        return mActivity.getBackPointService();
     }
 
     protected abstract void initView();

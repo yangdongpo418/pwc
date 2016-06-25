@@ -13,22 +13,13 @@ import android.widget.FrameLayout;
 
 import com.pwc.sdc.recruit.PwcApplication;
 import com.pwc.sdc.recruit.R;
-import com.pwc.sdc.recruit.data.remote.BackPointService;
-import com.pwc.sdc.recruit.data.remote.HttpSubscriber;
-import com.pwc.sdc.recruit.data.remote.RetrofitClient;
-import com.pwc.sdc.recruit.view.widget.LoadStateFrameLayout;
-import com.pwc.sdc.recruit.view.widget.dialog.CommonToast;
+import com.pwc.sdc.recruit.widget.LoadStateFrameLayout;
+import com.pwc.sdc.recruit.widget.dialog.CommonToast;
 import com.thirdparty.proxy.log.TLog;
 import com.thirdparty.proxy.utils.DialogHelp;
 import com.thirdparty.proxy.utils.WindowUtils;
 
-import java.util.ArrayList;
-
 import butterknife.ButterKnife;
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * @author:dongpo 创建时间: 5/24/2016
@@ -37,21 +28,17 @@ import rx.schedulers.Schedulers;
  */
 public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity {
 
-    private boolean _isVisible;
+    private boolean mIsVisible;
     private ProgressDialog _waitDialog;
-    protected LayoutInflater mInflater;
     private LoadStateFrameLayout mLoadStateFrameLayout;
-    public FragmentManager mFragmentManager;
-    /**
-     * 当前activity所持有的所有网络请求
-     */
-    private ArrayList<Subscription> mRequestSubscriptions;
-    private BackPointService mBackEndService;
-    private Bundle mObj;
+    protected T mPresenter;
+    protected LayoutInflater mInflater;
     /**
      * startFragment中携带的bundle的头信息
      */
     public static final String FRAGMENT_MESSAGE_HEADER = "start_fragment_message_header";
+    private FragmentManager mFragmentManager;
+    private Bundle mObj;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,43 +47,37 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         mInflater = getLayoutInflater();
         mFragmentManager = getSupportFragmentManager();
 
-        View layoutView = onBeforeSetContentLayout(getLayoutView());
-        View loadingView = getLoadingStateView(layoutView);
-
-        if (loadingView != null) {
-            mLoadStateFrameLayout = addLoadingStateView(loadingView);
-            layoutView = mLoadStateFrameLayout;
-        }
-
+        View layoutView = onDealWithContentView(getLayoutView());
+        onBeforeSetContentLayout();
         setContentView(layoutView);
 
         ButterKnife.bind(this);
         initView();
 
-        mRequestSubscriptions = new ArrayList<>();
-        mBackEndService = RetrofitClient.getInstance().getService();
+        mPresenter = instancePresenter();
 
         Intent intent = getIntent();
         if (intent != null) {
             handleIntent(intent);
         }
 
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             onRestoreInitData(savedInstanceState);
         }
 
         initData();
-        _isVisible = true;
     }
 
-    protected void onRestoreInitData(Bundle savedInstanceState){};
+    protected void onBeforeSetContentLayout(){}
 
     protected void handleIntent(Intent intent) {
+    }
 
+    protected void onRestoreInitData(Bundle savedInstanceState) {
     }
 
     /**
-     * @param targetView  用户要添加加载状态的view
+     * @param targetView 用户要添加加载状态的view
      * @return 添加加载状态
      */
     public LoadStateFrameLayout addLoadingStateView(View targetView) {
@@ -105,7 +86,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         ViewGroup.LayoutParams targetParams = targetView.getLayoutParams();
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
-        if(targetParams == null){
+        if (targetParams == null) {
             targetParams = params;
         }
 
@@ -138,36 +119,27 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         }
     }
 
-    protected View onBeforeSetContentLayout(View contentView) {
-        return contentView;
+    public PwcApplication getPwcApplication() {
+        return PwcApplication.getInstance();
+    }
+
+    protected View onDealWithContentView(View layoutView) {
+        View loadingView = getLoadingStateView(layoutView);
+
+        if (loadingView != null) {
+            mLoadStateFrameLayout = addLoadingStateView(loadingView);
+            layoutView = mLoadStateFrameLayout;
+        }
+
+        return layoutView;
     }
 
     protected View getLayoutView() {
-        return mInflater.inflate(getLayoutId(), null);
+        return inflate(getLayoutId());
     }
 
-    protected View inflateView(int resId) {
-        return mInflater.inflate(resId, null);
-    }
-
-    /**
-     * @param savedInstanceState activity被后台杀死，后恢复进行调用
-     */
-    protected void restoreInit(Bundle savedInstanceState) {
-    }
-
-    /**
-     * 发送网络请求
-     *
-     * @param observable
-     * @param callBack
-     * @param <T>
-     */
-    protected <T> Subscription sendHttpRequest(Observable<T> observable, HttpSubscriber<T> callBack) {
-        Subscription request = observable.subscribeOn(Schedulers.io()).unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(callBack);
-        addAsyncRequests(request);
-        return request;
+    public View inflate(int resId) {
+        return mInflater.from(this).inflate(resId, null);
     }
 
     @Override
@@ -178,12 +150,20 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     @Override
     protected void onResume() {
         super.onResume();
+        mPresenter.subscribe();
+        mIsVisible = true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mIsVisible = false;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        cancelAllRequest();
+        mPresenter.unSubscribe();
         ButterKnife.unbind(this);
         WindowUtils.hideSoftKeyboard(getCurrentFocus());
         PwcApplication.getInstance().finishActivity(this);
@@ -192,17 +172,99 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBundle(FRAGMENT_MESSAGE_HEADER, mObj);
+        mPresenter.onActivitySaveInstanceState(outState);
     }
 
-    public void sendBroadCast(String action, String category) {
-        Intent intent = getAppContext().newIntent(action, category);
-        sendBroadcast(intent);
+
+    public void showToast(String message) {
+        showToast(message, 0, Gravity.BOTTOM);
     }
 
-    public PwcApplication getAppContext() {
-        return PwcApplication.getInstance();
+    public void showToast(int msgResid, int icon, int gravity) {
+        showToast(getString(msgResid), icon, gravity);
     }
+
+    public void showToast(String message, int icon, int gravity) {
+        CommonToast toast = new CommonToast(this);
+        toast.setMessage(message);
+        toast.setMessageIc(icon);
+        toast.setLayoutGravity(gravity);
+        toast.show();
+    }
+
+
+    public ProgressDialog showWaitDialog() {
+        return showWaitDialog(R.string.loading);
+    }
+
+
+    public ProgressDialog showWaitDialog(int resid) {
+        return showWaitDialog(getString(resid));
+    }
+
+
+    public ProgressDialog showWaitDialog(String message) {
+        if (mIsVisible) {
+            if (_waitDialog == null) {
+                _waitDialog = DialogHelp.getWaitDialog(this, message);
+            }
+            if (_waitDialog != null) {
+                _waitDialog.setMessage(message);
+                _waitDialog.show();
+            }
+            return _waitDialog;
+        }
+        return null;
+    }
+
+    public void hideWaitDialog() {
+        if (mIsVisible && _waitDialog != null) {
+            try {
+                _waitDialog.dismiss();
+                _waitDialog = null;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        int backCount = mFragmentManager.getBackStackEntryCount();
+        if(backCount>0){
+            mFragmentManager.popBackStackImmediate();
+        }else{
+            super.onBackPressed();
+        }
+    }
+
+    /**
+     * Debug输出Log信息
+     *
+     * @param msg
+     */
+    protected void showDebugLog(String msg) {
+        TLog.d(msg);
+    }
+
+    /**
+     * Error输出Log信息
+     *
+     * @param msg
+     */
+    protected void showErrorLog(String msg) {
+        TLog.e(msg);
+    }
+
+    /**
+     * Info输出Log信息
+     *
+     * @param msg
+     */
+    protected void showInfoLog(String msg) {
+        TLog.i(msg);
+    }
+
 
     /**
      * 通过Class跳转界面
@@ -254,122 +316,6 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         startActivityForResult(intent, requestCode);
     }
 
-    public void showToast(String message) {
-        showToast(message, 0, Gravity.BOTTOM);
-    }
-
-    public void showToast(int msgResid, int icon, int gravity) {
-        showToast(getString(msgResid), icon, gravity);
-    }
-
-    public void showToast(String message, int icon, int gravity) {
-        CommonToast toast = new CommonToast(this);
-        toast.setMessage(message);
-        toast.setMessageIc(icon);
-        toast.setLayoutGravity(gravity);
-        toast.show();
-    }
-
-
-    public ProgressDialog showWaitDialog() {
-        return showWaitDialog(R.string.loading);
-    }
-
-
-    public ProgressDialog showWaitDialog(int resid) {
-        return showWaitDialog(getString(resid));
-    }
-
-
-    public ProgressDialog showWaitDialog(String message) {
-        if (_isVisible) {
-            if (_waitDialog == null) {
-                _waitDialog = DialogHelp.getWaitDialog(this, message);
-            }
-            if (_waitDialog != null) {
-                _waitDialog.setMessage(message);
-                _waitDialog.show();
-            }
-            return _waitDialog;
-        }
-        return null;
-    }
-
-    public void hideWaitDialog() {
-        if (_isVisible && _waitDialog != null) {
-            try {
-                _waitDialog.dismiss();
-                _waitDialog = null;
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-
-    /**
-     * Debug输出Log信息
-     *
-     * @param msg
-     */
-    protected void showDebugLog(String msg) {
-        TLog.d(msg);
-    }
-
-    /**
-     * Error输出Log信息
-     *
-     * @param msg
-     */
-    protected void showErrorLog(String msg) {
-        TLog.e(msg);
-    }
-
-    /**
-     * Info输出Log信息
-     *
-     * @param msg
-     */
-    protected void showInfoLog(String msg) {
-        TLog.i(msg);
-    }
-
-    protected BackPointService getBackPointService() {
-        return mBackEndService;
-    }
-
-    public void addAsyncRequests(Subscription request) {
-        mRequestSubscriptions.add(request);
-
-    }
-
-    /**
-     * 取消一个网络请求
-     *
-     * @param request
-     */
-    public void cancelRequest(Subscription request) {
-        request.unsubscribe();
-        request = null;
-    }
-
-    /**
-     * 取消当前Activity相关的网络请求
-     */
-    private void cancelAllRequest() {
-        if (mRequestSubscriptions != null && mRequestSubscriptions.size() > 0) {
-            int size = mRequestSubscriptions.size();
-            for (int i = 0; i < size; i++) {
-                Subscription request = mRequestSubscriptions.get(i);
-                if (request != null && !request.isUnsubscribed()) {
-                    request.unsubscribe();
-                    request = null;
-                }
-            }
-            mRequestSubscriptions.clear();
-        }
-    }
-
     public void addFragment(int container, BaseFragment fragment) {
         if (fragment != null && !fragment.isAdded()) {
             String tag = fragment.getClass().getName();
@@ -388,7 +334,6 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         if (fragment != null && fragment.isAdded()) {
             mFragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
         }
-
     }
 
     public void showFragment(BaseFragment fragment) {
@@ -418,7 +363,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     public void startFragment(int container, BaseFragment originFragment, Class<? extends BaseFragment> clazz, Bundle bundle) {
         BaseFragment targetFragment = obtainFragment(clazz);
 
-        if(bundle != null){
+        if (bundle != null) {
             String tag = targetFragment.getTag();
             bundle.putString(FRAGMENT_MESSAGE_HEADER, tag);
             setTag(bundle);
@@ -435,8 +380,8 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     }
 
 
-    public BaseFragment obtainFragment(Class<? extends BaseFragment> clazz) {
-        BaseFragment fragment = findFragmentByClazz(clazz);
+    public <T extends BaseFragment> T obtainFragment(Class<T> clazz) {
+        T fragment = (T) findFragmentByClazz(clazz);
         if (fragment == null) {
             try {
                 fragment = clazz.newInstance();
@@ -452,11 +397,6 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     public BaseFragment findFragmentByClazz(Class<? extends BaseFragment> clazz) {
         String tag = clazz.getClass().getName();
         return (BaseFragment) mFragmentManager.findFragmentByTag(tag);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     public void setTag(Bundle bundle) {
@@ -481,4 +421,6 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     protected abstract void initData();
 
     protected abstract int getLayoutId();
+
+    protected abstract T instancePresenter();
 }
