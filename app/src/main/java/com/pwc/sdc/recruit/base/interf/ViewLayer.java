@@ -6,5 +6,5 @@ package com.pwc.sdc.recruit.base.interf;
  * 修改:
  */
 public interface ViewLayer<T> {
-    void setPresenter(T presenter);
+
 }

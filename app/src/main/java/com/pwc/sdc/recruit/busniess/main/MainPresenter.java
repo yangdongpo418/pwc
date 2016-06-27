@@ -2,9 +2,7 @@ package com.pwc.sdc.recruit.busniess.main;
 
 import android.util.Log;
 
-import com.pwc.sdc.recruit.base.BaseActivity;
 import com.pwc.sdc.recruit.base.BasePresenter;
-import com.pwc.sdc.recruit.busniess.main.fragment.MainFragment;
 
 /**
  * @author:dongpo 创建时间: 2016/6/25
@@ -14,8 +12,8 @@ import com.pwc.sdc.recruit.busniess.main.fragment.MainFragment;
 public class MainPresenter extends BasePresenter<MainConstract.View, MainMode> implements MainConstract.Presenter {
 
 
-    public MainPresenter(BaseActivity activity, MainFragment viewLayer, MainMode modelLayer) {
-        super(activity, viewLayer, modelLayer);
+    public MainPresenter(MainConstract.View viewLayer, MainMode modelLayer) {
+        super(viewLayer, modelLayer);
     }
 
     @Override

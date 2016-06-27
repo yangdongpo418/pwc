@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import com.pwc.sdc.recruit.PwcApplication;
 import com.pwc.sdc.recruit.R;
 import com.pwc.sdc.recruit.base.interf.ActivityPresenter;
+import com.pwc.sdc.recruit.base.interf.ViewLayer;
 import com.pwc.sdc.recruit.widget.LoadStateFrameLayout;
 import com.pwc.sdc.recruit.widget.dialog.CommonToast;
 import com.thirdparty.proxy.log.TLog;
@@ -27,7 +28,7 @@ import butterknife.ButterKnife;
  * 描述:
  * 修改:
  */
-public abstract class BaseActivity<T extends ActivityPresenter> extends AppCompatActivity {
+public abstract class BaseActivity<T extends ActivityPresenter> extends AppCompatActivity implements ViewLayer<T> {
 
     private boolean mIsVisible;
     private ProgressDialog _waitDialog;

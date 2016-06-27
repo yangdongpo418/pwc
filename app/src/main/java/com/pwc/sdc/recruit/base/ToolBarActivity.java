@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.pwc.sdc.recruit.R;
+import com.pwc.sdc.recruit.base.interf.ActivityPresenter;
 
 import butterknife.Bind;
 
@@ -18,7 +19,7 @@ import butterknife.Bind;
  * @author
  * @created
  */
-public abstract class ToolBarActivity extends BaseActivity{
+public abstract class ToolBarActivity<T extends ActivityPresenter> extends BaseActivity<T>{
 
     @Bind(R.id.common_tl_toolbar)
     public Toolbar mToolbar;
