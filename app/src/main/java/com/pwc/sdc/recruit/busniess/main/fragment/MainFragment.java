@@ -10,7 +10,6 @@ import com.pwc.sdc.recruit.base.BaseFragment;
 import com.pwc.sdc.recruit.base.BaseRecycleAdapter;
 import com.pwc.sdc.recruit.base.ViewHolder;
 import com.pwc.sdc.recruit.busniess.main.MainConstract;
-import com.pwc.sdc.recruit.busniess.main.MainPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,7 @@ import butterknife.OnClick;
  * 描述:
  * 修改:
  */
-public class MainFragment extends BaseFragment<MainPresenter> implements MainConstract.View{
+public class MainFragment extends BaseFragment<MainConstract.Presenter> implements MainConstract.View{
    @Bind(R.id.main_rv_content)
    RecyclerView rvContent;
 

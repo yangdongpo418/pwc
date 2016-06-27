@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 
 import com.pwc.sdc.recruit.PwcApplication;
 import com.pwc.sdc.recruit.R;
+import com.pwc.sdc.recruit.base.interf.ActivityPresenter;
 import com.pwc.sdc.recruit.base.interf.ViewLayer;
 import com.pwc.sdc.recruit.widget.LoadStateFrameLayout;
 import com.pwc.sdc.recruit.widget.PtrFixFrameLayout;
@@ -28,7 +29,7 @@ import in.srain.cube.views.ptr.PtrFrameLayout;
  * @author
  * @created
  */
-public abstract class BaseFragment<T extends BasePresenter> extends Fragment implements ViewLayer<T> {
+public abstract class BaseFragment<T extends ActivityPresenter> extends Fragment implements ViewLayer<T> {
 
     protected LayoutInflater mInflater;
     public BaseActivity mActivity;
@@ -187,6 +188,12 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
 
     protected void updateStateView(int state) {
         mLoadStateFrameLayout.updateState(state);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mPresenter.onFragmentSaveInstanceState(outState);
     }
 
     protected abstract void initView();

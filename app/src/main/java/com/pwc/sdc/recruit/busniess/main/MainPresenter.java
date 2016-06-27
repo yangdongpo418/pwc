@@ -11,7 +11,7 @@ import com.pwc.sdc.recruit.busniess.main.fragment.MainFragment;
  * 描述:
  * 修改:
  */
-public class MainPresenter extends BasePresenter<MainFragment,MainMode> implements MainConstract.Presenter {
+public class MainPresenter extends BasePresenter<MainConstract.View, MainMode> implements MainConstract.Presenter {
 
 
     public MainPresenter(BaseActivity activity, MainFragment viewLayer, MainMode modelLayer) {

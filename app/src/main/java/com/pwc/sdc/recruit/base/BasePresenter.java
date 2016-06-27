@@ -4,7 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import com.pwc.sdc.recruit.base.interf.PresenterLayer;
+import com.pwc.sdc.recruit.base.interf.ActivityModel;
+import com.pwc.sdc.recruit.base.interf.ActivityPresenter;
 import com.pwc.sdc.recruit.base.interf.ViewLayer;
 
 import in.srain.cube.views.ptr.PtrFrameLayout;
@@ -14,7 +15,7 @@ import in.srain.cube.views.ptr.PtrFrameLayout;
  * 描述: Presenter层基类
  * 修改:
  */
-public abstract class BasePresenter<V extends ViewLayer, M extends BaseModel> implements PresenterLayer {
+public abstract class BasePresenter<V extends ViewLayer, M extends ActivityModel> implements ActivityPresenter {
 
     public V mViewLayer;
     public final M mModelLayer;
@@ -34,12 +35,12 @@ public abstract class BasePresenter<V extends ViewLayer, M extends BaseModel> im
         }
     }
 
+    public void onRefresh(PtrFrameLayout frame){}
+
     @Override
     public void subscribe() {
 
     }
-
-    public void onRefresh(PtrFrameLayout frame){}
 
     @Override
     public void unSubscribe() {
@@ -56,6 +57,6 @@ public abstract class BasePresenter<V extends ViewLayer, M extends BaseModel> im
         mActivity.sendBroadcast(intent);
     }
 
-    protected void onActivitySaveInstanceState(Bundle outState){}
-    protected void onFragmentSaveInstanceState(Bundle outState){}
+    public void onActivitySaveInstanceState(Bundle outState){}
+    public void onFragmentSaveInstanceState(Bundle outState){}
 }

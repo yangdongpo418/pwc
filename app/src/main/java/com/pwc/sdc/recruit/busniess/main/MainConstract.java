@@ -1,5 +1,8 @@
 package com.pwc.sdc.recruit.busniess.main;
 
+import com.pwc.sdc.recruit.base.interf.ActivityPresenter;
+import com.pwc.sdc.recruit.base.interf.ViewLayer;
+
 /**
  * @author:dongpo 创建时间: 2016/6/25
  * 描述:
@@ -10,21 +13,14 @@ public interface MainConstract {
     /**
      * 由view实现方法，供presenter调用
      */
-    interface View {
+    interface View extends ViewLayer<MainConstract.Presenter>{
 
     }
 
     /**
      * 有presenter实现，由view层调用
      */
-    interface Presenter{
+    interface Presenter extends ActivityPresenter{
         String requestClick(String value);
-    }
-
-    /**
-     *  由model层实现，供presenter调用
-     */
-    interface Model{
-        String dealWithValue(String value);
     }
 }

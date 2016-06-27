@@ -9,8 +9,8 @@ import com.pwc.sdc.recruit.base.BaseModel;
  * 描述:
  * 修改:
  */
-public class MainMode extends BaseModel implements MainConstract.Model{
-    @Override
+public class MainMode extends BaseModel{
+
     public String dealWithValue(String value) {
         Log.d("Log_text", "MainMode+dealWithValue + Model完成处理");
         return "dealed";
