@@ -5,11 +5,8 @@ import com.pwc.sdc.recruit.constants.Constants;
 import com.pwc.sdc.recruit.data.model.User;
 
 /**
- * activity堆栈式管理
- *
  * @author
  * @created
- *
  */
 public class AccountManager {
 

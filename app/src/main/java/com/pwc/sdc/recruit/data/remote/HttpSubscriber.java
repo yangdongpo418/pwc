@@ -15,7 +15,7 @@ public abstract class HttpSubscriber<T> extends Subscriber<T> {
 
     @Override
     public void onCompleted() {
-
+        onRequestCompleted();
     }
 
     @Override
@@ -32,8 +32,8 @@ public abstract class HttpSubscriber<T> extends Subscriber<T> {
                 e1.printStackTrace();
                 onFailure(code, e1.getMessage());
             }
-        }else{
-            onFailure(-1,"Unknown Exception");
+        } else {
+            onFailure(-1, "Unknown Exception");
         }
     }
 
@@ -48,6 +48,10 @@ public abstract class HttpSubscriber<T> extends Subscriber<T> {
     }
 
     public void onRequestStart() {
+
+    }
+
+    public void onRequestCompleted() {
 
     }
 

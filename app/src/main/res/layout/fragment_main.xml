@@ -15,4 +15,10 @@
             android:text="mvp测试"
             android:id="@+id/mvp_text"
             android:layout_height="wrap_content"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/mvp_start"
+            android:text="跳转"
+            />
 </LinearLayout>

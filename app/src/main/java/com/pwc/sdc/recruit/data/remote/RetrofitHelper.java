@@ -9,15 +9,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * 描述:
  * 修改:
  */
-public class RetrofitClient {
+public class RetrofitHelper {
 
     private final Retrofit mRetrofit;
     private final BackPointService mBackPointService;
-    private static RetrofitClient client = new RetrofitClient();
+    private static RetrofitHelper client = new RetrofitHelper();
 
     private static final String BASE_URL = "http://apicloud.mob.com/v1/weather/query/";
 
-    private RetrofitClient(){
+    private RetrofitHelper(){
 
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -27,7 +27,7 @@ public class RetrofitClient {
         mBackPointService = mRetrofit.create(BackPointService.class);
     }
 
-    public static RetrofitClient getInstance(){
+    public static RetrofitHelper getInstance(){
         return client;
     }
 

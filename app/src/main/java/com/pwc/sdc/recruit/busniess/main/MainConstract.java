@@ -20,7 +20,9 @@ public interface MainConstract {
     /**
      * 有presenter实现，由view层调用
      */
-    interface Presenter extends ActivityPresenter{
+    interface Presenter extends ActivityPresenter<MainConstract.View>{
         String requestClick(String value);
+        void start();
+        void second();
     }
 }

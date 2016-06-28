@@ -7,6 +7,6 @@ import android.os.Parcelable;
  * 描述:
  * 修改:
  */
-public abstract class ParcelEntity extends Entity implements Parcelable{
+public abstract class ParcelEntity implements Parcelable{
 
 }

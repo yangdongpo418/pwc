@@ -15,7 +15,7 @@ import in.srain.cube.views.ptr.PtrFrameLayout;
  * 描述: Presenter层基类
  * 修改:
  */
-public abstract class BasePresenter<V extends ViewLayer, M extends ActivityModel> implements ActivityPresenter {
+public abstract class BasePresenter<V extends ViewLayer, M extends ActivityModel> implements ActivityPresenter<V> {
 
     public V mViewLayer;
     public final M mModelLayer;
@@ -55,6 +55,11 @@ public abstract class BasePresenter<V extends ViewLayer, M extends ActivityModel
         Intent intent = new Intent(action);
         intent.addCategory(category);
         mActivity.sendBroadcast(intent);
+    }
+
+    @Override
+    public void onViewChange(V viewLayer) {
+        setViewLayer(viewLayer);
     }
 
     public void onActivitySaveInstanceState(Bundle outState){}

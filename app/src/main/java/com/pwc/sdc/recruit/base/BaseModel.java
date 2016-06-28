@@ -24,7 +24,10 @@ public abstract class BaseModel implements ActivityModel {
 
     public BaseModel(){
         mRequestSubscriptions = new CompositeSubscription();
+        initData();
     }
+
+    protected void initData(){}
 
     public <T> Subscription sendHttpRequest(Observable<T> observable, HttpSubscriber<T> callBack) {
         Subscription request = observable.subscribeOn(Schedulers.io()).unsubscribeOn(Schedulers.io())

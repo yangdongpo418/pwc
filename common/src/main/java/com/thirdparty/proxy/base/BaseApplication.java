@@ -10,7 +10,10 @@ import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.thirdparty.proxy.BuildConfig;
+import com.thirdparty.proxy.log.TLog;
 import com.thirdparty.proxy.net.frecso.OkHttpImagePipelineConfigFactory;
+import com.thirdparty.proxy.utils.DataCleanUtils;
 
 
 public class BaseApplication extends Application {
@@ -32,8 +35,7 @@ public class BaseApplication extends Application {
     }
 
     private void init() {
-        //TLog.init(getPackageName(), BuildConfig.DEBUG);
-
+        TLog.init(getPackageName(), BuildConfig.DEBUG);
         ImagePipelineConfig config = OkHttpImagePipelineConfigFactory.newBuilder(this)
                 .build();
         Fresco.initialize(this,config);
@@ -66,4 +68,17 @@ public class BaseApplication extends Application {
     public static void showToast(String message, int duration) {
         Toast.makeText(mContext, "", duration).show();
     }
+
+    /**
+     * 清除缓存
+     */
+    public static void cleanCache(){
+        DataCleanUtils.cleanInternalCache(mContext);
+    }
+
+    public static void wipeData(){
+        DataCleanUtils.cleanApplicationData(mContext);
+    }
+
+
 }

@@ -69,7 +69,8 @@ public abstract class BaseActivity<T extends ActivityPresenter> extends AppCompa
         initData();
     }
 
-    protected void onBeforeSetContentLayout(){}
+    protected void onBeforeSetContentLayout() {
+    }
 
     protected void handleIntent(Intent intent) {
     }
@@ -223,8 +224,8 @@ public abstract class BaseActivity<T extends ActivityPresenter> extends AppCompa
             try {
                 _waitDialog.dismiss();
                 _waitDialog = null;
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -232,9 +233,9 @@ public abstract class BaseActivity<T extends ActivityPresenter> extends AppCompa
     @Override
     public void onBackPressed() {
         int backCount = mFragmentManager.getBackStackEntryCount();
-        if(backCount>0){
+        if (backCount > 0) {
             mFragmentManager.popBackStackImmediate();
-        }else{
+        } else {
             super.onBackPressed();
         }
     }

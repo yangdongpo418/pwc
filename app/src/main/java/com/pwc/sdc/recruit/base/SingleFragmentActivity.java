@@ -12,7 +12,7 @@ import com.pwc.sdc.recruit.R;
 public abstract class SingleFragmentActivity extends ToolBarActivity {
     @Override
     protected void initView() {
-        addFragmentAddBackStack(R.id.single_fl_container, getFirstFragment());
+        replaceFragment(R.id.single_fl_container, getFirstFragment());
     }
 
     @Override

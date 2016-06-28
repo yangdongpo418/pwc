@@ -8,5 +8,11 @@
         android:layout_height="400dp"
         android:background="@color/gary"
         android:text="这是第二个Fragment"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/second_mvp"
+        android:text="second_mvp_text"
+        />
 
 </LinearLayout>

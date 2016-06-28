@@ -9,8 +9,10 @@ import in.srain.cube.views.ptr.PtrFrameLayout;
  * 描述:
  * 修改:
  */
-public interface ActivityPresenter extends PresenterLayer{
+public interface ActivityPresenter<V> extends PresenterLayer{
     void onRefresh(PtrFrameLayout frame);
     void onActivitySaveInstanceState(Bundle outState);
     void onFragmentSaveInstanceState(Bundle outState);
+    void setViewLayer(V viewLayer);
+    void onViewChange(V viewLayer);
 }

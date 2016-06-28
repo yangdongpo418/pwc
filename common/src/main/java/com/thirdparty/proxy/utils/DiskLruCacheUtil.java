@@ -1,10 +1,7 @@
-package com.thirdparty.proxy.cache;
+package com.thirdparty.proxy.utils;
 
 import android.content.Context;
 import android.os.Environment;
-
-import com.thirdparty.proxy.utils.FileUtil;
-import com.thirdparty.proxy.utils.WindowUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +29,7 @@ public class DiskLruCacheUtil {
 
     private static int maxSize = 10 * 1024 * 1024;// 一个缓存文件最大可以缓存10M
 
-    public static final String CACHE_OBJECT = "cache";// 对象缓存目录
+    public static final String CACHE_OBJECT = "diskCache";// 对象缓存目录
 
     /**
      * 保存对象缓存
@@ -92,7 +89,7 @@ public class DiskLruCacheUtil {
      * @return
      * @throws IOException
      */
-    public static DiskLruCache.Editor getDiskLruCacheOutputStream(
+    private static DiskLruCache.Editor getDiskLruCacheOutputStream(
             Context context, String uniqueName, String key) throws IOException {
         DiskLruCache mDiskLruCache = DiskLruCache.open(
                 getDiskCacheDir(context, uniqueName), appVersion, valueCount,
@@ -108,7 +105,7 @@ public class DiskLruCacheUtil {
      * @param uniqueName
      * @return
      */
-    public static File getDiskCacheDir(Context context, String uniqueName) {
+    private static File getDiskCacheDir(Context context, String uniqueName) {
         String cachePath;
         if (Environment.MEDIA_MOUNTED.equals(Environment
                 .getExternalStorageState())

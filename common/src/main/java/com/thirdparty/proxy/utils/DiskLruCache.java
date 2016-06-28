@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.thirdparty.proxy.cache;
+package com.thirdparty.proxy.utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;

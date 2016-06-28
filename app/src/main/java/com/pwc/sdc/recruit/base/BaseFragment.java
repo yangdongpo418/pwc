@@ -125,6 +125,17 @@ public abstract class BaseFragment<T extends ActivityPresenter> extends Fragment
         super.onDestroy();
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if(hidden){
+
+        }else{
+            mPresenter.onViewChange(this);
+        }
+
+
+    }
+
     public PwcApplication getApplication() {
         return mActivity.getPwcApplication();
     }

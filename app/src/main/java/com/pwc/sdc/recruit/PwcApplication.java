@@ -1,12 +1,11 @@
 package com.pwc.sdc.recruit;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.widget.Toast;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.pwc.sdc.recruit.base.BaseActivity;
+import com.pwc.sdc.recruit.data.model.greendao.DaoMaster;
 import com.thirdparty.proxy.base.BaseApplication;
 
 import java.util.ArrayList;
@@ -22,6 +21,7 @@ public class PwcApplication extends BaseApplication {
 
     private ArrayList<BaseActivity> mActivities;
     private static PwcApplication mPwcApplication;
+    private DaoMaster mMaster;
 
     @Override
     public void onCreate() {
@@ -29,20 +29,18 @@ public class PwcApplication extends BaseApplication {
         mPwcApplication = this;
         mActivities = new ArrayList<>();
 
-        registerBroadCast();
+        initDataBase();
     }
 
-    public void registerBroadCast() {
-        IntentFilter filter = new IntentFilter("text_broadcast");
-        filter.addCategory(Intent.CATEGORY_DEFAULT);
-        registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Toast.makeText(getApplicationContext(), "this is advertsment", Toast.LENGTH_LONG).show();
-            }
-        }, filter);
+    private void initDataBase() {
+        DaoMaster.DevOpenHelper dbHelper = new DaoMaster.DevOpenHelper(this,"candidate.db",null);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        mMaster = new DaoMaster(db);
     }
 
+    public DaoMaster getDaoMaster(){
+        return mMaster;
+    }
 
     public static PwcApplication getInstance() {
         return mPwcApplication;
@@ -113,15 +111,4 @@ public class PwcApplication extends BaseApplication {
         sendBroadcast(intent);
     }
 
-    /**
-     *
-     */
-    public void cleanCache() {
-
-    }
-
-
-    public void checkUpdate() {
-
-    }
 }

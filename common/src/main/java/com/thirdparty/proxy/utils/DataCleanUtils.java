@@ -1,17 +1,17 @@
-package com.thirdparty.proxy.cache;
-
-import java.io.File;
+package com.thirdparty.proxy.utils;
 
 import android.content.Context;
 import android.os.Environment;
 
+import java.io.File;
+
 /**
  * 数据删除工具类
- * @author FireAnt（http://my.oschina.net/LittleDY）
- * @version 创建时间：2014年10月27日 上午10:18:22
+ * @author
+ * @version
  * 
  */
-public class DataCleanManager {
+public class DataCleanUtils {
 	
 	/**
 	 * 清除本应用内部缓存
@@ -81,7 +81,7 @@ public class DataCleanManager {
 	
 	/**
 	 * 清除自定义路径下的文件，使用需小心，请不要误删。而且只支持目录下的文件删除
-	 * @param filePath
+	 * @param
 	 */
 	public static void cleanCustomCache(File file) {
 		deleteFilesByDirectory(file);

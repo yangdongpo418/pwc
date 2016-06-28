@@ -71,9 +71,14 @@ public class MainFragment extends BaseFragment<MainConstract.Presenter> implemen
 
     @OnClick(R.id.mvp_text)
     public void mvpText(View view){
-        Log.d("Log_text", "MainPresenter+requestClick + View 发起事件");
+        Log.d("Log_text", "MainPresenter+requestClick + View 发起事件 presenter为"+mPresenter.getClass().getSimpleName());
         String result = mPresenter.requestClick("123");
         Log.d("Log_text", "MainFragment+mvpText +  拿到结果为" + result);
+    }
+
+    @OnClick(R.id.mvp_start)
+    public void start(View view){
+        mPresenter.start();
     }
 
 }
