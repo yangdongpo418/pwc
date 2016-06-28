@@ -2,8 +2,8 @@ package com.pwc.sdc.recruit.base;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
+import com.pwc.sdc.recruit.PwcApplication;
 import com.pwc.sdc.recruit.base.interf.ActivityModel;
 import com.pwc.sdc.recruit.base.interf.ActivityPresenter;
 import com.pwc.sdc.recruit.base.interf.ViewLayer;
@@ -19,20 +19,10 @@ public abstract class BasePresenter<V extends ViewLayer, M extends ActivityModel
 
     public V mViewLayer;
     public final M mModelLayer;
-    public final BaseActivity mActivity;
 
-    public BasePresenter(BaseActivity activity, V viewLayer, M modelLayer){
-        mActivity = activity;
+    public BasePresenter(V viewLayer, M modelLayer){
         mViewLayer = viewLayer;
-        viewLayer.setPresenter(this);
         mModelLayer = modelLayer;
-    }
-
-    public void setViewLayer(V viewLayer){
-        if(viewLayer != null){
-            mViewLayer = viewLayer;
-            viewLayer.setPresenter(this);
-        }
     }
 
     public void onRefresh(PtrFrameLayout frame){}
@@ -47,19 +37,10 @@ public abstract class BasePresenter<V extends ViewLayer, M extends ActivityModel
         mModelLayer.cancelAllRequest();
     }
 
-    protected View inflateView(int resId) {
-        return mActivity.inflate(resId);
-    }
-
     public void sendBroadCast(String action, String category) {
         Intent intent = new Intent(action);
         intent.addCategory(category);
-        mActivity.sendBroadcast(intent);
-    }
-
-    @Override
-    public void onViewChange(V viewLayer) {
-        setViewLayer(viewLayer);
+        PwcApplication.getInstance().sendBroadcast(intent);
     }
 
     public void onActivitySaveInstanceState(Bundle outState){}

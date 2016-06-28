@@ -22,7 +22,7 @@ import butterknife.OnClick;
  * 描述:
  * 修改:
  */
-public class MainFragment extends BaseFragment<MainConstract.Presenter> implements MainConstract.View{
+public class MainFragment extends BaseFragment<MainConstract.Presenter>{
    @Bind(R.id.main_rv_content)
    RecyclerView rvContent;
 

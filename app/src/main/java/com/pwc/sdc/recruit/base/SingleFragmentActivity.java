@@ -3,13 +3,14 @@ package com.pwc.sdc.recruit.base;
 import android.view.View;
 
 import com.pwc.sdc.recruit.R;
+import com.pwc.sdc.recruit.base.interf.ActivityPresenter;
 
 /**
  * @author:dongpo 创建时间: 6/23/2016
  * 描述:
  * 修改:
  */
-public abstract class SingleFragmentActivity extends ToolBarActivity {
+public abstract class SingleFragmentActivity<T extends ActivityPresenter> extends ToolBarActivity<T> {
     @Override
     protected void initView() {
         replaceFragment(R.id.single_fl_container, getFirstFragment());

@@ -14,7 +14,7 @@ import butterknife.OnClick;
  * 描述:
  * 修改:
  */
-public class SecondFragment extends BaseFragment<MainConstract.Presenter> implements MainConstract.View{
+public class SecondFragment extends BaseFragment<MainConstract.Presenter>{
     @Override
     protected void initView() {
 

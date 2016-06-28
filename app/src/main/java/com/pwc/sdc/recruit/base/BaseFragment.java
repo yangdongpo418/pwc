@@ -14,7 +14,6 @@ import android.widget.FrameLayout;
 import com.pwc.sdc.recruit.PwcApplication;
 import com.pwc.sdc.recruit.R;
 import com.pwc.sdc.recruit.base.interf.ActivityPresenter;
-import com.pwc.sdc.recruit.base.interf.ViewLayer;
 import com.pwc.sdc.recruit.widget.LoadStateFrameLayout;
 import com.pwc.sdc.recruit.widget.PtrFixFrameLayout;
 
@@ -29,7 +28,7 @@ import in.srain.cube.views.ptr.PtrFrameLayout;
  * @author
  * @created
  */
-public abstract class BaseFragment<T extends ActivityPresenter> extends Fragment implements ViewLayer<T> {
+public abstract class BaseFragment<T extends ActivityPresenter> extends Fragment {
 
     protected LayoutInflater mInflater;
     public BaseActivity mActivity;
@@ -47,6 +46,7 @@ public abstract class BaseFragment<T extends ActivityPresenter> extends Fragment
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         this.mActivity = (BaseActivity) activity;
+        mPresenter = (T) mActivity.mPresenter;
     }
 
     @Override
@@ -106,11 +106,6 @@ public abstract class BaseFragment<T extends ActivityPresenter> extends Fragment
     }
 
     @Override
-    public void setPresenter(T presenter) {
-        mPresenter = presenter;
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
     }
@@ -127,12 +122,6 @@ public abstract class BaseFragment<T extends ActivityPresenter> extends Fragment
 
     @Override
     public void onHiddenChanged(boolean hidden) {
-        if(hidden){
-
-        }else{
-            mPresenter.onViewChange(this);
-        }
-
 
     }
 

@@ -14,7 +14,7 @@ public interface MainConstract {
      * 由view实现方法，供presenter调用
      */
     interface View extends ViewLayer<MainConstract.Presenter>{
-
+        void jumpSecondFragment();
     }
 
     /**
